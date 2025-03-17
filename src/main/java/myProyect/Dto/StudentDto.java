@@ -13,13 +13,11 @@ public class StudentDto {
     private String name;
     private Integer age;
     private String email;
-    private String course;
 
-    public StudentDto(Long id, String name, Integer age, String email, String course) {
+    public StudentDto(Long id, String name, Integer age, String email) {
         this.id = id;
         this.name = name;
         this.age = age;
         this.email = email;
-        this.course = course;
     }
 }

@@ -11,64 +11,42 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController  // Indica que es un controlador
 @RequestMapping("/Student")   // indica la ruta base del controlador
 @Validated  //Responsable de validar objetos inconsistentes
-public class StudentController {
+public class StudentController extends GenericController<Student,Long>{
 
-    private final StudentService studentService;
+    private final StudentService service;
 
     @Autowired  //inyeccion de dependencia auto
-    public StudentController(StudentService studentService) {
-        this.studentService = studentService;
+    public StudentController(StudentService service) {
+        super(service);
+        this.service = service;
     }
 
-    //  @RequestMapping(method = RequestMethod.GET)
-    @GetMapping
-    public ResponseEntity<List<Student>> getStudents(){
-        return ResponseEntity.ok(studentService.getStudents());
-    }
+//======================================================================
     @GetMapping("/{id}")
-    public ResponseEntity<?> getStudentById(@PathVariable Long id){
-        Optional<StudentDto> student = studentService.getStudent(id);  //Guardamos el resultado
+    @Override  //sobreescribimos el metodo
+    public ResponseEntity<?> getObjetById(@PathVariable Long id){
+        Optional<StudentDto> student = service.getStudent(id);  //Guardamos el resultado
         // verificamos si el estudiante esta presente
         if(student.isPresent()){return ResponseEntity.ok(student.get());}  //codigo (200)
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ERROR 404: Recurso no Encontrado"); //codigo (404)
     }
-
     @GetMapping("byCredendials")
     public ResponseEntity<?> getStudentByUserAndPassword(@Valid @RequestBody CredentialDto credentialDto){
-        Optional<StudentDto> student = studentService.getStudentByUserAndPassword(credentialDto.getUser(), credentialDto.getPassword());
+        Optional<StudentDto> student = service.getStudentByUserAndPassword(credentialDto.getUser(), credentialDto.getPassword());
 
         if(student.isPresent()){return ResponseEntity.ok(student.get());}
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ERROR 404: Recurso no Encontrado"); //codigo (404)
     }
 
+    @Override
     @PostMapping
-    public ResponseEntity<Student> postStudent(@Valid @RequestBody Student modifiedStudent){
-        Student student = studentService.saveStudent(modifiedStudent);
-        return ResponseEntity.status(HttpStatus.CREATED).body(student);  //codigo (201)
-    }
-    @PutMapping("/{id}")
-    public ResponseEntity<?> putStudent(@PathVariable Long id,@Valid @RequestBody Student modifiedStudent){
-        Optional<StudentDto> student = studentService.getStudent(id);  //Guardamos el resultado del estudiante
-        if(student.isPresent()){
-            modifiedStudent.setId(id);  //Nos aseguramos de que su id sean iguales
-            Student updatedStudent = studentService.saveStudent(modifiedStudent); // guardamos al estudiante
-            return ResponseEntity.ok(updatedStudent);
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ERROR 404: Recurso no Encontrado"); //codigo (404)
-    }
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteStudent(@PathVariable Long id){
-        Optional<StudentDto> student = studentService.getStudent(id);
-        if(student.isPresent()){
-            studentService.deleteStudent(id);
-            return ResponseEntity.noContent().build();  // codigo (204)
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ERROR 404: Recurso no Encontrado"); //codigo (404)
+    public ResponseEntity<?> postObjet(@Valid @RequestBody Student student) {
+        Optional<Student> studentStatus = service.postObject(student);
+        return ResponseEntity.status(HttpStatus.CREATED).body(studentStatus); //codigo (201)
     }
 }
