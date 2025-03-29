@@ -2,6 +2,7 @@ package myProyect.Services;
 
 import myProyect.Model.Teacher;
 import myProyect.Repository.TeacherRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -11,6 +12,7 @@ public class TeacherService extends GenericService<Teacher,Long>{
 
     private final TeacherRepository repository;
 
+    @Autowired
     public TeacherService(TeacherRepository repository) {
         super(repository);
         this.repository = repository;

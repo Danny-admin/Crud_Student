@@ -1,16 +1,16 @@
 package myProyect.Controllers;
 
 import jakarta.validation.Valid;
+import myProyect.Dto.SearchStudentDto;
+import myProyect.Model.Student;
 import myProyect.Model.Subjet_base;
 import myProyect.Services.SubjetService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -33,5 +33,12 @@ public class SubjetController extends GenericController<Subjet_base,Long>{
             return ResponseEntity.status(HttpStatus.CREATED).body(subjetStatus);  //codigo (201)
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ERROR 404: COURSE OR TEACHER NOT FOUND...");
+    }
+
+    @GetMapping("/Students")
+    public ResponseEntity<?> getStudents(  //hago la validacion de mi atributo "idSubject" no debe estar vacio
+            @RequestBody @Valid @Validated(SearchStudentDto.subject.class) SearchStudentDto information){
+
+        return service.getStudents(information);  //retornamos el codigo proporcionado por el servicio
     }
 }

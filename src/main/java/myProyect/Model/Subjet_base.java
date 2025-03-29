@@ -2,6 +2,7 @@ package myProyect.Model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -29,17 +30,18 @@ public class Subjet_base {
     @NotBlank
     private String difficulty;
 
+    @OneToOne
+    @JoinColumn(name = "teacher_id")  //relacion con profesor
+    private Teacher teacher;
+
     @ManyToMany(mappedBy = "listSubjet")  //relacion con estudiante
+    @JsonManagedReference
     private List<Student> listStudent = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "course_id")  //relacion con carrera
     @JsonBackReference
     private Courses_base course;
-
-    @OneToOne
-    @JoinColumn(name = "teacher_id")  //relacion con profesor
-    private Teacher teacher;
 
     public Subjet_base() {}
 

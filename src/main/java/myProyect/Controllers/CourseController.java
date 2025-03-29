@@ -1,16 +1,14 @@
 package myProyect.Controllers;
 
 import jakarta.validation.Valid;
+import myProyect.Dto.SearchStudentDto;
 import myProyect.Model.Courses_base;
 import myProyect.Services.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -36,4 +34,10 @@ public class CourseController extends GenericController<Courses_base,Long>{
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ERROR 404: FACULTY NOT FOUND...");  //codigo (404)
     }
+    @GetMapping("/Students")
+    public ResponseEntity<?> getStudents(
+            @RequestBody @Valid @Validated(SearchStudentDto.course.class) SearchStudentDto information){
+        return service.getStudents(information);
+    }
+
 }

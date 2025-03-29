@@ -1,16 +1,21 @@
 package myProyect.Services;
 
+import myProyect.Dto.SearchStudentDto;
 import myProyect.Model.Courses_base;
+import myProyect.Model.Student;
 import myProyect.Model.Subjet_base;
 import myProyect.Model.Teacher;
 import myProyect.Repository.CourseRepository;
 import myProyect.Repository.SubjetRepository;
 import myProyect.Repository.TeacherRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.List;
+
 
 @Service
 public class SubjetService extends GenericService<Subjet_base,Long>{
@@ -19,14 +24,16 @@ public class SubjetService extends GenericService<Subjet_base,Long>{
     private final CourseRepository courseRepository;
     private final TeacherRepository teacherRepository;
 
-    public SubjetService(SubjetRepository subjetRepository, CourseRepository courseRepository, TeacherRepository teacherRepository) {
+    @Autowired
+    public SubjetService(SubjetRepository subjetRepository,
+                         CourseRepository courseRepository,
+                         TeacherRepository teacherRepository) {
         super(subjetRepository);
         this.subjetRepository = subjetRepository;
         this.courseRepository = courseRepository;
         this.teacherRepository = teacherRepository;
-
     }
-    //==============
+    //====================================
     @Override
     public Optional<Subjet_base> postObject(Subjet_base subjet) {
         Optional<Courses_base> foundCourse = courseRepository.findById(subjet.getCourse().getId());
@@ -49,5 +56,18 @@ public class SubjetService extends GenericService<Subjet_base,Long>{
     private void trasition(Courses_base course, Subjet_base subjet, Teacher teacher){
         subjet.transition(course,teacher);
     }
-    //===============
+    //==========================METODO DE RECOLECCIONS DE ESTUDIANTES======================
+    public ResponseEntity<?> getStudents(SearchStudentDto information) {
+        Optional<Subjet_base> foundSubjet = this.getObject(information.getIdSubject());
+        if(foundSubjet.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ERROR 404: SUBJET NOT FOUND");  // codigo (404)
+        }
+        List<Student> listStudent = foundSubjet.get().getListStudent();
+        return listStudent.isEmpty() ? ResponseEntity.noContent().build() :  ResponseEntity.ok(listStudent);
+    }
+    //========= CONEXIONES CON CARRERA =============
+    public List<Subjet_base> getSubjetsByCourse(Long idCourse) {
+        return subjetRepository.findByCourse_Id(idCourse);
+    }
+    //=================================================
 }
